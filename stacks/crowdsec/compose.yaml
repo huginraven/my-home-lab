@@ -1,0 +1,23 @@
+services:
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:v1.7.7
+    container_name: crowdsec
+    environment:
+      - GID=${PGID}
+      - COLLECTIONS=crowdsecurity/nginx crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+      - CUSTOM_HOSTNAME=${HOSTNAME}
+      - BOUNCER_KEY_swag=${CROWDSEC_API_KEY}
+    volumes:
+      - ${CONFIG_PATH}/crowdsec:/etc/crowdsec:rw
+      - ${DATA_PATH}/crowdsec:/var/lib/crowdsec/data:rw
+      - ${LOG_PATH}/swag/log/nginx:/var/log/swag:ro
+      - /var/log:/var/log/host:ro
+    networks:
+      - proxy_net
+    restart: ${RESTART_POLICY}
+    security_opt:
+      - no-new-privileges=true
+
+networks:
+  proxy_net:
+    external: true

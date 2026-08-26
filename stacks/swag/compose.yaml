@@ -1,0 +1,33 @@
+services:
+  swag:
+    image: lscr.io/linuxserver/swag:latest
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - URL=${URL}
+      - VALIDATION=dns
+      - SUBDOMAINS=wildcard
+      - DNSPLUGIN=cloudflare
+      - EMAIL=${EMAIL}
+      - SWAG_AUTORELOAD=true
+      - DOCKER_MODS=linuxserver/mods:swag-dashboard|linuxserver/mods:swag-cloudflare-real-ip|linuxserver/mods:swag-crowdsec
+      - CROWDSEC_API_KEY=${CROWDSEC_API_KEY}
+      - CROWDSEC_LAPI_URL=${CROWDSEC_LAPI_URL}
+      - CROWDSEC_MODE=${CROWDSEC_MODE:-stream}
+      - CROWDSEC_F2B_DISABLE=true
+    volumes:
+      - ${CONFIG_PATH}/swag:/config
+    ports:
+      - 443:443
+      - 443:443/udp
+    networks:
+      - proxy_net
+    restart: ${RESTART_POLICY}
+
+networks:
+  proxy_net:
+    external: true
