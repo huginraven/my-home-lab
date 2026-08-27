@@ -1,0 +1,20 @@
+services:
+  dockhand:
+    image: fnsys/dockhand:latest
+    container_name: dockhand
+    restart: ${RESTART_POLICY}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - GIT_REPOS_DIR=/opt/stacks
+    group_add:
+      - "${DOCKER_GID}"
+    networks:
+      - proxy_net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_PATH}/dockhand:/app/data
+      - ${STACKS_PATH}:/opt/stacks
+networks:
+  proxy_net:
+    external: true
