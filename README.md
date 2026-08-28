@@ -14,11 +14,13 @@ stacks/
 ├── homepage/      # Application dashboard & server status
 ├── vaultwarden/   # Self-hosted password vault (Bitwarden compatible)
 ├── decypharr/     # Debrid FUSE mount provider (/mnt:rshared)
+├── jellyfin/      # Media streaming server
 ├── radarr/        # Movie collection manager
 ├── sonarr/        # TV series collection manager
 ├── prowlarr/      # Indexer integration for *arr apps
 ├── bazarr/        # Automated subtitle downloader
-└── recyclarr/     # TRaSH Guides quality profiles sync (cron)
+├── recyclarr/     # TRaSH Guides quality profiles sync (cron)
+└── seerr/         # Media discovery & request management (Plex/Jellyfin/Emby)
 ```
 
 ## 🚀 Deployment Workflow
@@ -77,7 +79,7 @@ To ensure seamless interaction between Decypharr (blackhole + FUSE debrid mount)
 ### Host Directory Structure
 ```bash
 # Create all required *arr and Decypharr directories in one go:
-mkdir -p /opt/appdata/config/{bazarr,prowlarr,radarr,recyclarr,sonarr}
+mkdir -p /opt/appdata/config/{bazarr,jellyfin,prowlarr,radarr,recyclarr,seerr,sonarr}
 mkdir -p /opt/appdata/config/decypharr/downloads/{radarr,sonarr}
 mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 ```
@@ -88,11 +90,13 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 │   ├── decypharr/downloads/
 │   │   ├── radarr/        # Blackhole watch folder for Radarr
 │   │   └── sonarr/        # Blackhole watch folder for Sonarr
+│   ├── jellyfin/          # Jellyfin configuration
 │   ├── radarr/            # Radarr configuration
 │   ├── sonarr/            # Sonarr configuration
 │   ├── bazarr/            # Bazarr configuration
 │   ├── prowlarr/          # Prowlarr configuration
-│   └── recyclarr/         # Recyclarr configuration
+│   ├── recyclarr/         # Recyclarr configuration
+│   └── seerr/             # Seerr configuration
 └── data/
     ├── decypharr/mnt/     # Debrid FUSE mount point (:rshared -> :rslave)
     ├── radarr/movies/     # Movies library root folder
@@ -104,6 +108,7 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 | Service | Container Path | Host Path | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Decypharr** | `/app`<br>`/mnt` | `${CONFIG_PATH}/decypharr`<br>`${DATA_PATH}/decypharr/mnt` | App config & blackhole downloads<br>FUSE virtual mount point (`rshared`) |
+| **Jellyfin** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt` | `${CONFIG_PATH}/jellyfin`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`) |
 | **Radarr** | `/config`<br>`/movies`<br>`/app/downloads/radarr`<br>`/mnt` | `${CONFIG_PATH}/radarr`<br>`${DATA_PATH}/radarr/movies`<br>`${CONFIG_PATH}/decypharr/downloads/radarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root movies library<br>Blackhole download folder<br>FUSE mount access (`rslave`) |
 | **Sonarr** | `/config`<br>`/tv`<br>`/app/downloads/sonarr`<br>`/mnt` | `${CONFIG_PATH}/sonarr`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${CONFIG_PATH}/decypharr/downloads/sonarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root TV series library<br>Blackhole download folder<br>FUSE mount access (`rslave`) |
 | **Bazarr** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt` | `${CONFIG_PATH}/bazarr`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`) |
@@ -113,7 +118,7 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 ## ⚙️ Architecture & Mount Details
 
 - **Reverse Proxy**: SWAG manages SSL wildcard certs via Cloudflare DNS validation and routes subdomains to containers on `proxy_net`.
-- **FUSE Mount Propagation**: Decypharr runs with `SYS_ADMIN` capabilities and exports mounts with `:rshared`. Consuming media apps (`Radarr`, `Sonarr`, `Bazarr`) mount the shared directory using `:rslave`.
+- **FUSE Mount Propagation**: Decypharr runs with `SYS_ADMIN` capabilities and exports mounts with `:rshared`. Consuming media apps (`Jellyfin`, `Radarr`, `Sonarr`, `Bazarr`) mount the shared directory using `:rslave`.
 - **Secrets**: Environment files (`.env`) are excluded from git.
 
 ## 📄 License

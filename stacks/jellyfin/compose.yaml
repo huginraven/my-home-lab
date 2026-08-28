@@ -1,0 +1,20 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: ${RESTART_POLICY}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_PATH}/jellyfin:/config
+      - ${DATA_PATH}/radarr/movies:/movies
+      - ${DATA_PATH}/sonarr/tvseries:/tv
+      - ${DATA_PATH}/decypharr/mnt:/mnt:rslave
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
