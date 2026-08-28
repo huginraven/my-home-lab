@@ -1,0 +1,36 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: ${RESTART_POLICY}
+    environment:
+      - DOMAIN=${DOMAIN}
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - LOG_FILE=${LOG_FILE}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - EXTENDED_LOGGING=${EXTENDED_LOGGING}
+      - IP_HEADER=${IP_HEADER}
+      - TZ=${TZ}
+      # - SMTP_HOST=${SMTP_HOST}
+      # - SMTP_FROM=${SMTP_FROM}
+      # - SMTP_FROM_NAME=${SMTP_FROM_NAME}
+      # - SMTP_PORT=${SMTP_PORT}
+      # - SMTP_SECURITY=${SMTP_SECURITY}
+      # - SMTP_USERNAME=${SMTP_USERNAME}
+      # - SMTP_PASSWORD=${SMTP_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/vaultwarden:/data
+    networks:
+      - proxy_net
+    healthcheck:
+      test: [ "CMD", "/healthcheck.sh" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  proxy_net:
+    external: true
