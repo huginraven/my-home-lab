@@ -1,0 +1,17 @@
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+    user: ${PUID}:${PGID}
+    restart: ${RESTART_POLICY}
+    environment:
+      - TZ=${TZ}
+      - CRON_SCHEDULE=${CRON_SCHEDULE:-@daily}
+    volumes:
+      - ${CONFIG_PATH}/recyclarr:/config
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
