@@ -1,0 +1,20 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: ${RESTART_POLICY}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_PATH}/sonarr:/config
+      - ${DATA_PATH}/sonarr/tvseries:/tv
+      - ${CONFIG_PATH}/decypharr/downloads/sonarr:/app/downloads/sonarr
+      - ${DATA_PATH}/decypharr/mnt:/mnt:rslave
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true

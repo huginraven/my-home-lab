@@ -1,0 +1,20 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: ${RESTART_POLICY}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_PATH}/radarr:/config
+      - ${DATA_PATH}/radarr/movies:/movies
+      - ${CONFIG_PATH}/decypharr/downloads/radarr:/app/downloads/radarr
+      - ${DATA_PATH}/decypharr/mnt:/mnt:rslave
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
