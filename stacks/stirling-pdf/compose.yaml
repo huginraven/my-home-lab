@@ -1,0 +1,30 @@
+services:
+  stirling-pdf:
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:${STIRLING_TAG:-latest}
+    container_name: stirling-pdf
+    restart: ${RESTART_POLICY}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - SECURITY_ENABLELOGIN=${SECURITY_ENABLELOGIN:-true}
+      - SYSTEM_DEFAULTLOCALE=${SYSTEM_DEFAULTLOCALE:-pl-PL}
+    volumes:
+      - ${CONFIG_PATH}/stirling-pdf:/configs
+      - ${DATA_PATH}/stirling-pdf/tessdata:/usr/share/tessdata
+      - ${DATA_PATH}/stirling-pdf/logs:/logs
+      - ${DATA_PATH}/stirling-pdf/pipeline:/pipeline
+      - ${DATA_PATH}/stirling-pdf/customFiles:/customFiles
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/info/status | grep -q 'UP' || curl -fL http://localhost:8080/ || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
+
