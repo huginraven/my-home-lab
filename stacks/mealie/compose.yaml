@@ -1,0 +1,52 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:${MEALIE_TAG:-latest}
+    container_name: mealie
+    restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          memory: 1000M
+    environment:
+      # General & Permissions
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - BASE_URL=${BASE_URL}
+      - ALLOW_SIGNUP=${ALLOW_SIGNUP:-false}
+      - DEFAULT_GROUP=${DEFAULT_GROUP:-Home}
+      - DEFAULT_HOUSEHOLD=${DEFAULT_HOUSEHOLD:-Family}
+      - DAILY_SCHEDULE_TIME=${DAILY_SCHEDULE_TIME:-23:45}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # Database (SQLite)
+      - DB_ENGINE=sqlite
+      - SQLITE_MIGRATE_JOURNAL_WAL=${SQLITE_MIGRATE_JOURNAL_WAL:-false}
+      # Security
+      - SECURITY_MAX_LOGIN_ATTEMPTS=${SECURITY_MAX_LOGIN_ATTEMPTS:-5}
+      - SECURITY_USER_LOCKOUT_TIME=${SECURITY_USER_LOCKOUT_TIME:-24}
+      # Email / SMTP Settings (Optional - uncomment if SMTP is enabled)
+      # - SMTP_HOST=${SMTP_HOST}
+      # - SMTP_PORT=${SMTP_PORT:-587}
+      # - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Mealie}
+      # - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+      # - SMTP_AUTH_STRATEGY=${SMTP_AUTH_STRATEGY:-TLS}
+      # - SMTP_USER=${SMTP_USER}
+      # - SMTP_PASSWORD=${SMTP_PASSWORD}
+      # OpenID Connect / OIDC Settings (Optional - uncomment if OIDC is enabled)
+      # - OIDC_AUTH_ENABLED=${OIDC_AUTH_ENABLED:-true}
+      # - OIDC_SIGNUP_ENABLED=${OIDC_SIGNUP_ENABLED:-true}
+      # - OIDC_CONFIGURATION_URL=${OIDC_CONFIGURATION_URL}
+      # - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      # - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      # - OIDC_PROVIDER_NAME=${OIDC_PROVIDER_NAME:-OAuth}
+      # - OIDC_AUTO_REDIRECT=${OIDC_AUTO_REDIRECT:-false}
+      # - OIDC_REMEMBER_ME=${OIDC_REMEMBER_ME:-false}
+    volumes:
+      - ${DATA_PATH}/mealie:/app/data
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
+
