@@ -16,6 +16,7 @@ stacks/
 ├── stirling-pdf/  # PDF manipulation & document processing suite
 ├── synch/         # Self-hosted E2EE sync server for Obsidian vaults
 ├── mealie/        # Self-hosted recipe manager and meal planner (SQLite)
+├── actual-server/ # Privacy-first envelope budgeting and personal finance app
 ├── decypharr/     # Debrid FUSE mount provider (/mnt:rshared)
 ├── jellyfin/      # Media streaming server
 ├── radarr/        # Movie collection manager
@@ -71,7 +72,7 @@ Start the core security layer and Dockhand:
 Once Dockhand is up:
 1. Open the Dockhand web interface.
 2. Link your Git repository / stacks directory (`/opt/my-home-lab/stacks`).
-3. Deploy, configure `.env` variables, and manage all remaining stacks (`Homepage`, `Vaultwarden`, `Stirling PDF`, `Synch`, `Mealie`, `*arr` media suite) directly from the UI.
+3. Deploy, configure `.env` variables, and manage all remaining stacks (`Homepage`, `Vaultwarden`, `Stirling PDF`, `Synch`, `Mealie`, `Actual Server`, `*arr` media suite) directly from the UI.
 
 ---
 

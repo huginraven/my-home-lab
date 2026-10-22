@@ -1,0 +1,26 @@
+services:
+  actual-server:
+    image: actualbudget/actual-server:${ACTUAL_SERVER_TAG:-latest}
+    container_name: actual-server
+    user: ${PUID:-1000}:${PGID:-1000}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - TZ=${TZ}
+      # Optional settings:
+      # - ACTUAL_UPLOAD_FILE_SYNC_SIZE_LIMIT_MB=${ACTUAL_UPLOAD_FILE_SYNC_SIZE_LIMIT_MB:-20}
+      # - ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SYNC_SIZE_LIMIT_MB=${ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SYNC_SIZE_LIMIT_MB:-50}
+      # - ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB=${ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB:-20}
+    volumes:
+      - ${DATA_PATH}/actual-server:/data
+    healthcheck:
+      test: [ "CMD-SHELL", "node src/scripts/health-check.js 2>/dev/null || node scripts/health-check.js 2>/dev/null || exit 1" ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
