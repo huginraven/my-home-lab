@@ -117,6 +117,7 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 | **Radarr** | `/config`<br>`/movies`<br>`/app/downloads/radarr`<br>`/mnt` | `${CONFIG_PATH}/radarr`<br>`${DATA_PATH}/radarr/movies`<br>`${CONFIG_PATH}/decypharr/downloads/radarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root movies library<br>Symlink download folder<br>FUSE mount access (`rslave`) |
 | **Sonarr** | `/config`<br>`/tv`<br>`/app/downloads/sonarr`<br>`/mnt` | `${CONFIG_PATH}/sonarr`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${CONFIG_PATH}/decypharr/downloads/sonarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root TV series library<br>Symlink download folder<br>FUSE mount access (`rslave`) |
 | **Bazarr** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt` | `${CONFIG_PATH}/bazarr`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`) |
+| **Seerr** | `/app/config` | `${CONFIG_PATH}/seerr` | Discovery & media request portal config |
 
 ---
 

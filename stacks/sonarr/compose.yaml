@@ -1,17 +1,36 @@
 services:
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:${SONARR_TAG:-latest}
     container_name: sonarr
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: ${SONARR_MEM_LIMIT:-1G}
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK=${UMASK:-002}
+      - TZ=${TZ:-UTC}
+      # Prevents .NET glibc arena memory bloat on Linux/ARM64:
+      - MALLOC_TRIM_THRESHOLD_=131072
     volumes:
       - ${CONFIG_PATH}/sonarr:/config
       - ${DATA_PATH}/sonarr/tvseries:/tv
       - ${CONFIG_PATH}/decypharr/downloads/sonarr:/app/downloads/sonarr
       - ${DATA_PATH}/decypharr/mnt:/mnt:rslave
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsSL http://127.0.0.1:8989/ >/dev/null || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - proxy_net
 

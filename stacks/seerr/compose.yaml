@@ -1,21 +1,32 @@
 services:
   seerr:
-    image: ghcr.io/seerr-team/seerr:latest
+    image: ghcr.io/seerr-team/seerr:${SEERR_TAG:-latest}
     container_name: seerr
     init: true
-    user: ${PUID}:${PGID}
-    restart: ${RESTART_POLICY}
+    user: ${PUID:-1000}:${PGID:-1000}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: ${SEERR_MEM_LIMIT:-1G}
     environment:
-      - TZ=${TZ}
-      - LOG_LEVEL=${LOG_LEVEL}
+      - TZ=${TZ:-UTC}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - PORT=5055
     volumes:
       - ${CONFIG_PATH}/seerr:/app/config
     healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1" ]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:5055/api/v1/status || exit 1"]
       start_period: 20s
-      timeout: 3s
-      interval: 15s
+      timeout: 5s
+      interval: 30s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - proxy_net
 
