@@ -79,7 +79,7 @@ Once Dockhand is up:
 
 ## 🎬 Media Pipeline & Paths Layout (*arr + Decypharr)
 
-To ensure seamless interaction between Decypharr (blackhole + FUSE debrid mount) and the `*arr` applications, the following folder structure is used on the host:
+To ensure seamless interaction between Decypharr (qBittorrent API + FUSE debrid mount) and the `*arr` applications, the following folder structure is used on the host:
 
 ### Host Directory Structure
 ```bash
@@ -93,8 +93,8 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 /opt/appdata/
 ├── config/
 │   ├── decypharr/downloads/
-│   │   ├── radarr/        # Blackhole watch folder for Radarr
-│   │   └── sonarr/        # Blackhole watch folder for Sonarr
+│   │   ├── radarr/        # Completed symlink folder for Radarr
+│   │   └── sonarr/        # Completed symlink folder for Sonarr
 │   ├── jellyfin/          # Jellyfin configuration
 │   ├── radarr/            # Radarr configuration
 │   ├── sonarr/            # Sonarr configuration
@@ -112,10 +112,10 @@ mkdir -p /opt/appdata/data/{decypharr/mnt,radarr/movies,sonarr/tvseries}
 
 | Service | Container Path | Host Path | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Decypharr** | `/app`<br>`/mnt` | `${CONFIG_PATH}/decypharr`<br>`${DATA_PATH}/decypharr/mnt` | App config & blackhole downloads<br>FUSE virtual mount point (`rshared`) |
-| **Jellyfin** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt` | `${CONFIG_PATH}/jellyfin`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`) |
-| **Radarr** | `/config`<br>`/movies`<br>`/app/downloads/radarr`<br>`/mnt` | `${CONFIG_PATH}/radarr`<br>`${DATA_PATH}/radarr/movies`<br>`${CONFIG_PATH}/decypharr/downloads/radarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root movies library<br>Blackhole download folder<br>FUSE mount access (`rslave`) |
-| **Sonarr** | `/config`<br>`/tv`<br>`/app/downloads/sonarr`<br>`/mnt` | `${CONFIG_PATH}/sonarr`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${CONFIG_PATH}/decypharr/downloads/sonarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root TV series library<br>Blackhole download folder<br>FUSE mount access (`rslave`) |
+| **Decypharr** | `/app`<br>`/mnt`<br>`/movies`<br>`/tv`<br>`/cache` | `${CONFIG_PATH}/decypharr`<br>`${DATA_PATH}/decypharr/mnt`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`tmpfs` (RAM) | App config & symlink downloads<br>FUSE virtual mount point (`rshared`)<br>Movies library (Repair worker)<br>TV library (Repair worker)<br>DFS streaming chunk cache |
+| **Jellyfin** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt`<br>`/transcode` | `${CONFIG_PATH}/jellyfin`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt`<br>`tmpfs` (RAM) | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`)<br>FFmpeg transcode/remux buffer |
+| **Radarr** | `/config`<br>`/movies`<br>`/app/downloads/radarr`<br>`/mnt` | `${CONFIG_PATH}/radarr`<br>`${DATA_PATH}/radarr/movies`<br>`${CONFIG_PATH}/decypharr/downloads/radarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root movies library<br>Symlink download folder<br>FUSE mount access (`rslave`) |
+| **Sonarr** | `/config`<br>`/tv`<br>`/app/downloads/sonarr`<br>`/mnt` | `${CONFIG_PATH}/sonarr`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${CONFIG_PATH}/decypharr/downloads/sonarr`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Root TV series library<br>Symlink download folder<br>FUSE mount access (`rslave`) |
 | **Bazarr** | `/config`<br>`/movies`<br>`/tv`<br>`/mnt` | `${CONFIG_PATH}/bazarr`<br>`${DATA_PATH}/radarr/movies`<br>`${DATA_PATH}/sonarr/tvseries`<br>`${DATA_PATH}/decypharr/mnt` | App config<br>Access to movies<br>Access to TV series<br>FUSE mount access (`rslave`) |
 
 ---

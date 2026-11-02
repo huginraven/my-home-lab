@@ -1,21 +1,43 @@
 services:
   decypharr:
-    image: cy01/blackhole:latest
+    image: cy01/blackhole:${DECYPHARR_TAG:-latest}
     container_name: decypharr
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: ${DECYPHARR_MEM_LIMIT:-6G}
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - UMASK=${UMASK:-002}
+      - TZ=${TZ:-UTC}
     volumes:
       - ${CONFIG_PATH}/decypharr:/app
       - ${DATA_PATH}/decypharr/mnt:/mnt:rshared
+      - ${DATA_PATH}/radarr/movies:/movies
+      - ${DATA_PATH}/sonarr/tvseries:/tv
+    # Dedicated RAM-disk for DFS / VFS streaming chunk cache (protects VPS SSD space & IOPS):
+    tmpfs:
+      - /cache:size=${DECYPHARR_CACHE_SIZE:-4g},mode=1777
     devices:
       - /dev/fuse:/dev/fuse:rwm
     cap_add:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck", "--config", "/app/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - proxy_net
 
