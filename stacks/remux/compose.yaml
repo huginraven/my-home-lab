@@ -1,0 +1,31 @@
+services:
+  remux:
+    image: ghcr.io/lostb1t/remux:${REMUX_TAG:-latest}
+    container_name: remux
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      # Optional settings:
+      # - RUST_LOG=${RUST_LOG:-info}
+    volumes:
+      - ${DATA_PATH}/remux:/data
+      # Optional local media & Decypharr FUSE mounts (hybrid mode):
+      # - ${DATA_PATH}/radarr/movies:/movies:ro
+      # - ${DATA_PATH}/sonarr/tvseries:/tv:ro
+      # - ${DATA_PATH}/decypharr/mnt:/mnt:rslave
+    # Optional Hardware Acceleration / GPU Transcoding:
+    # devices:
+    #   - /dev/dri:/dev/dri
+    # group_add:
+    #   - "${RENDER_GID:-105}"
+    # security_opt:
+    #   - seccomp:unconfined
+    networks:
+      - proxy_net
+
+networks:
+  proxy_net:
+    external: true
+

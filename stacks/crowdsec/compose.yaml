@@ -5,7 +5,7 @@ services:
     environment:
       - GID=${PGID}
       - COLLECTIONS=crowdsecurity/nginx crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
-      - PARSERS=crowdsecurity/actual-budget-whitelist
+      - PARSERS=crowdsecurity/actual-budget-whitelist crowdsecurity/jellyfin-whitelist
       - CUSTOM_HOSTNAME=${HOSTNAME}
       - BOUNCER_KEY_swag=${CROWDSEC_API_KEY}
     volumes:
