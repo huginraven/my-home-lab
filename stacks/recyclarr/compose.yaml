@@ -1,14 +1,26 @@
 services:
   recyclarr:
-    image: ghcr.io/recyclarr/recyclarr:latest
+    # Recyclarr v8+ publishes major-version tags only (no `latest`):
+    image: ghcr.io/recyclarr/recyclarr:${RECYCLARR_TAG:-8}
     container_name: recyclarr
-    user: ${PUID}:${PGID}
-    restart: ${RESTART_POLICY}
+    # Runs as non-root: ${CONFIG_PATH}/recyclarr must exist and be owned by PUID:PGID before first start
+    user: ${PUID:-1000}:${PGID:-1000}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: ${RECYCLARR_MEM_LIMIT:-512M}
     environment:
-      - TZ=${TZ}
+      - TZ=${TZ:-UTC}
       - CRON_SCHEDULE=${CRON_SCHEDULE:-@daily}
     volumes:
       - ${CONFIG_PATH}/recyclarr:/config
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - proxy_net
 
