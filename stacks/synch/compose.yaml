@@ -14,7 +14,7 @@ services:
       - PORT=8787
       - TZ=${TZ}
     volumes:
-      - ${DATA_PATH}/synch:/app/data
+      - ${DATA_PATH}/synch:/data
     healthcheck:
       test: [ "CMD", "node", "-e", "fetch('http://localhost:8787/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))" ]
       interval: 30s

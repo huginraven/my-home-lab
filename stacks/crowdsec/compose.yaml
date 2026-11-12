@@ -2,9 +2,11 @@ services:
   crowdsec:
     image: docker.io/crowdsecurity/crowdsec:v1.7.7
     container_name: crowdsec
+    ports:
+      - "127.0.0.1:8080:8080"
     environment:
       - GID=${PGID}
-      - COLLECTIONS=crowdsecurity/nginx crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+      - COLLECTIONS=crowdsecurity/nginx crowdsecurity/http-cve crowdsecurity/whitelist-good-actors crowdsecurity/linux crowdsecurity/sshd
       - PARSERS=crowdsecurity/actual-budget-whitelist crowdsecurity/jellyfin-whitelist crowdsecurity/jellyseerr-whitelist
       - CUSTOM_HOSTNAME=${HOSTNAME}
       - BOUNCER_KEY_swag=${CROWDSEC_API_KEY}

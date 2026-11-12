@@ -1,14 +1,20 @@
 services:
   stirling-pdf:
-    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:${STIRLING_TAG:-latest}
+    image: ghcr.io/stirling-tools/stirling-pdf:${STIRLING_TAG:-latest}
     container_name: stirling-pdf
+    init: true
     restart: ${RESTART_POLICY}
+    deploy:
+      resources:
+        limits:
+          memory: ${STIRLING_MEM_LIMIT:-1536M}
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
       - SECURITY_ENABLELOGIN=${SECURITY_ENABLELOGIN:-true}
       - SYSTEM_DEFAULTLOCALE=${SYSTEM_DEFAULTLOCALE:-pl-PL}
+      - JAVA_TOOL_OPTIONS=-Xmx768m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
     volumes:
       - ${CONFIG_PATH}/stirling-pdf:/configs
       - ${DATA_PATH}/stirling-pdf/tessdata:/usr/share/tessdata
